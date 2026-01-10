@@ -1,0 +1,84 @@
+name: Cross-Site Scripting (XSS)
+description: Detects XSS vulnerabilities and output encoding patterns
+
+secure:
+  - id: html_encoder
+    name: HtmlEncoder
+    pattern: 'HtmlEncoder\.(Default\.)?Encode|WebUtility\.HtmlEncode|HttpUtility\.HtmlEncode'
+    description: HTML encoding of output
+
+  - id: js_encoder
+    name: JavaScriptEncoder
+    pattern: 'JavaScriptEncoder\.(Default\.)?Encode|HttpUtility\.JavaScriptStringEncode'
+    description: JavaScript encoding of output
+
+  - id: url_encoder
+    name: UrlEncoder
+    pattern: 'UrlEncoder\.(Default\.)?Encode|WebUtility\.UrlEncode|HttpUtility\.UrlEncode'
+    description: URL encoding of output
+
+  - id: security_headers
+    name: Security Headers
+    pattern: 'Content-Security-Policy|X-XSS-Protection|X-Content-Type-Options'
+    description: XSS-related security headers
+
+  - id: antixss
+    name: AntiXSS Library
+    pattern: 'AntiXssEncoder|Sanitizer\.GetSafeHtml|HtmlSanitizer|Ganss\.XSS'
+    description: AntiXSS sanitization library usage
+
+  - id: innertext
+    name: innerText Assignment
+    pattern: 'innerText\s*=[^;]+\+'
+    risk: MEDIUM
+    description: Dynamic innerText - safer than innerHTML but verify
+
+vulnerable:
+  - id: html_raw
+    name: Html.Raw
+    pattern: 'Html\.Raw\s*\(|@Html\.Raw'
+    risk: HIGH
+    description: Unencoded HTML output
+    remediation: Use HTML encoding or sanitize input
+
+  - id: response_write
+    name: Response.Write
+    pattern: '[Rr]esponse\.[Ww]rite\s*\('
+    risk: MEDIUM
+    description: Direct response writing - verify encoding
+    remediation: Use HTML encoding before output
+
+  - id: write_html
+    name: Write with HTML
+    pattern: '(Write|Format)\s*\(.*<.*(\,|\+).*\)'
+    risk: HIGH
+    description: Writing HTML with dynamic content
+    remediation: Encode dynamic content before output
+
+  - id: innerhtml
+    name: innerHTML Assignment
+    pattern: 'innerHTML\s*=[^;]+\+'
+    risk: HIGH
+    description: Dynamic innerHTML assignment
+    remediation: Use textContent or encode content
+
+  - id: markup_string
+    name: MarkupString
+    pattern: '@\(\(MarkupString\)|MarkupString\('
+    risk: HIGH
+    description: Blazor MarkupString with unencoded content
+    remediation: Sanitize content before creating MarkupString
+
+  - id: validate_request_off
+    name: ValidateRequest Disabled
+    pattern: "[Vv]alidate[Rr]equest\\s*=\\s*[\"']?false|ValidateInput\\s*\\(\\s*false|ValidateRequestMode\\.Disabled"
+    risk: HIGH
+    description: Request validation disabled
+    remediation: Keep validation enabled or implement custom validation
+
+  - id: asp_inline
+    name: ASP Inline Output
+    pattern: '<%=.*%>'
+    risk: REVIEW
+    description: ASP inline output - verify encoding
+    remediation: Use HTML encoding for dynamic content

@@ -1,0 +1,51 @@
+name: User Input Sources
+description: Identifies user input entry points for taint analysis
+
+vulnerable:
+  - id: querystring
+    name: QueryString
+    pattern: '[Rr]equest\.[Qq]uery[Ss]tring|Request\.Query\['
+    risk: REVIEW
+    description: GET parameter input
+
+  - id: request_form
+    name: Request.Form
+    pattern: '[Rr]equest\.[Ff]orm'
+    risk: REVIEW
+    description: POST form input
+
+  - id: request_cookies
+    name: Request.Cookies
+    pattern: '[Rr]equest\.[Cc]ookies'
+    risk: REVIEW
+    description: Cookie input
+
+  - id: request_headers
+    name: Request.Headers
+    pattern: '[Rr]equest\.[Hh]eaders'
+    risk: REVIEW
+    description: Header input
+
+  - id: model_binding
+    name: Model Binding
+    pattern: '\[FromBody\]|\[FromQuery\]|\[FromRoute\]|\[FromForm\]|\[FromHeader\]'
+    risk: REVIEW
+    description: ASP.NET model binding input
+
+  - id: request_url
+    name: Request.Url
+    pattern: '[Rr]equest\.(Url|RawUrl|UrlReferrer)'
+    risk: REVIEW
+    description: URL input from request
+
+  - id: request_files
+    name: Request.Files
+    pattern: '[Rr]equest\.(Files|InputStream|BinaryRead)'
+    risk: REVIEW
+    description: File upload input
+
+  - id: webforms
+    name: WebForms Controls
+    pattern: 'TextBox\.Text|HiddenField\.Value'
+    risk: REVIEW
+    description: WebForms control input

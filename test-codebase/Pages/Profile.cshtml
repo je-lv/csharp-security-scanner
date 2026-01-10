@@ -1,0 +1,36 @@
+@page
+@model TestApp.Pages.ProfileModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<!-- XSS - Vulnerable: Html.Raw -->
+<div class="bio">
+    @Html.Raw(Model.UserBio)
+</div>
+
+<!-- XSS - Vulnerable: MarkupString (Blazor) -->
+<div>
+    @((MarkupString)Model.Description)
+</div>
+
+<!-- CSRF - Secure: AntiForgeryToken -->
+<form method="post">
+    @Html.AntiForgeryToken()
+    <input type="text" asp-for="Username" />
+    <button type="submit">Update</button>
+</form>
+
+<!-- User Input - Model binding -->
+<form method="post">
+    <input type="text" name="search" />
+    <input type="hidden" asp-for="UserId" />
+</form>
+
+@functions {
+    // XSS - Secure: Encoding
+    public string SafeOutput(string input)
+    {
+        return System.Text.Encodings.Web.HtmlEncoder.Default.Encode(input);
+    }
+}

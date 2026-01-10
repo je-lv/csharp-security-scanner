@@ -1,0 +1,35 @@
+name: Logging
+description: Detects logging vulnerabilities and secure patterns
+
+secure:
+  - id: structured_log
+    name: Structured Logging
+    pattern: 'ILogger<|LoggerFactory|Serilog|NLog|Log4Net'
+    description: Structured logging framework
+
+  - id: exception_handler
+    name: Exception Handler
+    pattern: 'UseExceptionHandler|ExceptionHandlerMiddleware'
+    description: Centralized exception handling
+
+vulnerable:
+  - id: stack_trace_resp
+    name: Stack Trace in Response
+    pattern: 'Response\.Write.*StackTrace|return.*StackTrace'
+    risk: HIGH
+    description: Stack trace exposed to users
+    remediation: Log errors server-side, return generic error to users
+
+  - id: custom_errors_off
+    name: Custom Errors Off
+    pattern: 'customErrors\s+mode\s*=\s*"Off"|UseDeveloperExceptionPage'
+    risk: REVIEW
+    description: Detailed errors may be exposed
+    remediation: Disable in production
+
+  - id: empty_catch
+    name: Empty Catch Block
+    pattern: 'catch\s*\{'
+    risk: MEDIUM
+    description: Empty catch block may hide errors
+    remediation: Log exceptions or handle appropriately

@@ -1,0 +1,94 @@
+name: SQL Injection
+description: Detects SQL injection vulnerabilities and secure ORM/parameterized patterns
+
+secure:
+  - id: ef_linq
+    name: Entity Framework LINQ
+    pattern: '\.(Where|FirstOrDefault|SingleOrDefault|Find|Any|All|Select|Include)\s*\([^"]*=>'
+    description: Safe parameterized LINQ queries
+
+  - id: dbcontext
+    name: DbContext Usage
+    pattern: '(dbContext|_context|DbSet<|:\s*DbContext)'
+    description: Entity Framework context usage
+
+  - id: sql_parameter
+    name: SqlParameter
+    pattern: '\.Parameters\.(Add|AddWithValue)|new SqlParameter|CommandType\.StoredProcedure'
+    description: Parameterized SQL commands
+
+  - id: dapper
+    name: Dapper Queries
+    pattern: '\.(Query|QueryAsync|QueryFirst|Execute|ExecuteAsync)<?'
+    description: Dapper ORM parameterized queries
+
+vulnerable:
+  - id: sql_concat
+    name: SQL String Concatenation
+    pattern: '(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|ORDER BY).*"\s*\+'
+    risk: HIGH
+    description: String concatenation in SQL queries
+    remediation: Use parameterized queries or ORM
+
+  - id: sql_vars
+    name: SQL with Variables
+    pattern: '"(SELECT|UPDATE|INSERT|DELETE).*".*(\,|\+)'
+    risk: HIGH
+    description: SQL strings with variable concatenation
+    remediation: Use parameterized queries
+
+  - id: sql_interpolation
+    name: Interpolated SQL
+    pattern: '\$"[^"]*?(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)'
+    risk: HIGH
+    description: String interpolation in SQL queries
+    remediation: Use parameterized queries
+
+  - id: raw_sql_ef
+    name: Raw SQL in Entity Framework
+    pattern: '\.(FromSqlRaw|ExecuteSqlRaw|FromSqlInterpolated|SqlQuery)'
+    risk: REVIEW
+    description: Raw SQL execution in EF - verify parameterization
+    remediation: Ensure parameters are passed separately
+
+  - id: string_format_sql
+    name: String.Format SQL
+    pattern: 'String\.Format\s*\([^)]*?(SELECT|INSERT|UPDATE|DELETE)'
+    risk: MEDIUM
+    description: String.Format with SQL queries
+    remediation: Use parameterized queries
+
+  - id: dynamic_linq
+    name: Dynamic LINQ
+    pattern: 'Dynamic\.Core|DynamicLinq|System\.Linq\.Dynamic|\.OrderBy\s*\(\s*"[^=]|\.Where\s*\(\s*"[^=]'
+    risk: MEDIUM
+    description: Dynamic LINQ with string expressions
+    remediation: Validate and sanitize input or use strongly-typed expressions
+
+  - id: sql_request
+    name: SQL with Request Data
+    pattern: '(SELECT|WHERE|AND|LIKE|ORDER BY|LIMIT).*\+\s*[Rr]equest\.'
+    risk: HIGH
+    description: Direct request data in SQL
+    remediation: Use parameterized queries
+
+  - id: sp_executesql
+    name: sp_executesql
+    pattern: '(exec|execute)\s+sp_executesql|(exec|execute)\s+@'
+    risk: REVIEW
+    description: Dynamic SQL execution
+    remediation: Verify parameters are properly bound
+
+  - id: stored_procs
+    name: Stored Procedures
+    pattern: '(exec|execute)\s+sp_|StoredProcedure\s*\('
+    risk: REVIEW
+    description: Stored procedure calls - verify parameter handling
+    remediation: Use parameterized calls
+
+  - id: oledb
+    name: OleDb/SqlCommand
+    pattern: 'OleDbConnection|ExecuteReader\s*\(|SqlCommand.*='
+    risk: REVIEW
+    description: Direct database access - verify parameterization
+    remediation: Use parameterized queries

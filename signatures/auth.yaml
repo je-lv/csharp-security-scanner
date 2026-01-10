@@ -1,0 +1,52 @@
+name: Authentication
+description: Detects authentication vulnerabilities and secure patterns
+
+secure:
+  - id: identity
+    name: ASP.NET Identity
+    pattern: 'UserManager<|SignInManager<|IdentityUser|AddIdentity<'
+    description: ASP.NET Identity framework
+
+  - id: jwt_validation
+    name: JWT Validation
+    pattern: 'JwtSecurityTokenHandler|TokenValidationParameters|ValidateIssuer|ValidateAudience'
+    description: JWT token validation
+
+  - id: secure_cookie
+    name: Secure Cookie
+    pattern: 'Cookie\.HttpOnly\s*=\s*true|Cookie\.SecurePolicy|CookieSecurePolicy\.Always'
+    description: Secure cookie configuration
+
+  - id: pwd_policy
+    name: Password Policy
+    pattern: 'RequireDigit|RequiredLength|RequireNonAlphanumeric|RequireUppercase'
+    description: Password policy configuration
+
+vulnerable:
+  - id: jwt_off
+    name: JWT Validation Disabled
+    pattern: 'ValidateIssuer\s*=\s*false|ValidateAudience\s*=\s*false|ValidateLifetime\s*=\s*false'
+    risk: HIGH
+    description: JWT validation disabled
+    remediation: Enable all JWT validation checks
+
+  - id: insecure_cookie
+    name: Insecure Cookie
+    pattern: 'Cookie\.HttpOnly\s*=\s*false|Cookie\.Secure\s*=\s*false'
+    risk: HIGH
+    description: Cookie security flags disabled
+    remediation: Enable HttpOnly and Secure flags
+
+  - id: custom_pwd_cmp
+    name: Custom Password Comparison
+    pattern: 'if\s*\([^)]*password\s*==|password\.Equals\s*\('
+    risk: HIGH
+    description: Custom password comparison - timing attack vulnerable
+    remediation: Use Identity framework or constant-time comparison
+
+  - id: document_cookie
+    name: document.cookie
+    pattern: 'document\.cookie'
+    risk: REVIEW
+    description: Client-side cookie access
+    remediation: Use HttpOnly cookies where possible

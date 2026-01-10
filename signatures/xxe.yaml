@@ -1,0 +1,42 @@
+name: XML External Entity (XXE)
+description: Detects XXE vulnerabilities in XML parsing
+
+secure:
+  - id: dtd_prohibit
+    name: DtdProcessing.Prohibit
+    pattern: 'DtdProcessing\.Prohibit'
+    description: DTD processing disabled
+
+  - id: xdocument
+    name: XDocument
+    pattern: 'XDocument\.Load|XDocument\.Parse'
+    description: XDocument is safe by default (.NET 4.5.2+)
+
+vulnerable:
+  - id: xml_text_reader
+    name: XmlTextReader
+    pattern: 'new\s+XmlTextReader\s*\(|XmlTextReader\s+\w+\s*='
+    risk: HIGH
+    description: XmlTextReader allows XXE by default
+    remediation: Use XmlReader with DtdProcessing.Prohibit
+
+  - id: dtd_parse
+    name: DtdProcessing.Parse
+    pattern: 'DtdProcessing\.Parse'
+    risk: HIGH
+    description: DTD processing enabled
+    remediation: Use DtdProcessing.Prohibit
+
+  - id: xpath_inject
+    name: XPath Injection
+    pattern: '\.SelectNodes\s*\(.*["'']\s*\+'
+    risk: HIGH
+    description: Dynamic XPath query construction
+    remediation: Use parameterized XPath or validate input
+
+  - id: prohibit_dtd_off
+    name: ProhibitDtd Off
+    pattern: 'ProhibitDtd\s*=\s*false'
+    risk: HIGH
+    description: DTD prohibition disabled
+    remediation: Set ProhibitDtd to true

@@ -1,0 +1,31 @@
+name: Configuration
+description: Detects insecure configuration patterns
+
+vulnerable:
+  - id: cors_all
+    name: CORS Allow All
+    pattern: 'AllowAnyOrigin|WithOrigins\s*\(\s*"\*"\)|Access-Control-Allow-Origin.*\*'
+    risk: HIGH
+    description: CORS allows any origin
+    remediation: Whitelist specific allowed origins
+
+  - id: open_redirect
+    name: Open Redirect
+    pattern: '[Rr]edirect\s*\([^)]*,\s*[Ff]alse\s*\)'
+    risk: HIGH
+    description: Potential open redirect
+    remediation: Validate redirect URLs against whitelist
+
+  - id: dir_browsing
+    name: Directory Browsing
+    pattern: 'UseDirectoryBrowser|DirectoryBrowsingEnabled\s*=\s*true'
+    risk: MEDIUM
+    description: Directory browsing enabled
+    remediation: Disable directory browsing in production
+
+  - id: validate_request_off
+    name: validateRequest Off
+    pattern: 'validateRequest\s*=\s*"false"'
+    risk: HIGH
+    description: ASP.NET request validation disabled
+    remediation: Keep validation enabled or implement custom validation

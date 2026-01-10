@@ -1,0 +1,40 @@
+name: Cross-Site Request Forgery (CSRF)
+description: Detects CSRF vulnerabilities and anti-forgery token patterns
+
+secure:
+  - id: antiforgery
+    name: ValidateAntiForgeryToken
+    pattern: '\[ValidateAntiForgeryToken\]|\[AutoValidateAntiforgeryToken\]'
+    description: Anti-forgery token validation
+
+  - id: antiforgery_token
+    name: AntiForgery Token
+    pattern: '@Html\.AntiForgeryToken|AntiForgery\.GetTokens|IAntiforgery'
+    description: Anti-forgery token generation
+
+  - id: samesite
+    name: SameSite Cookie
+    pattern: 'SameSite\s*=\s*SameSiteMode\.(Strict|Lax)'
+    description: SameSite cookie protection
+
+vulnerable:
+  - id: http_post
+    name: HttpPost Actions
+    pattern: '\[HttpPost\][^\]]*public|public.*\[HttpPost\]'
+    risk: REVIEW
+    description: POST endpoint - verify CSRF protection
+    remediation: Add ValidateAntiForgeryToken attribute
+
+  - id: ignore_antiforgery
+    name: IgnoreAntiforgeryToken
+    pattern: '\[IgnoreAntiforgeryToken\]'
+    risk: HIGH
+    description: CSRF protection explicitly disabled
+    remediation: Implement CSRF protection or document exception reason
+
+  - id: samesite_none
+    name: SameSite=None
+    pattern: 'SameSite\s*=\s*SameSiteMode\.None'
+    risk: MEDIUM
+    description: SameSite cookie set to None
+    remediation: Use Strict or Lax unless cross-site needed

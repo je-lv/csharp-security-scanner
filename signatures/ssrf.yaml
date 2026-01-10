@@ -1,0 +1,35 @@
+name: Server-Side Request Forgery (SSRF)
+description: Detects SSRF vulnerabilities and secure HTTP client patterns
+
+secure:
+  - id: http_client_factory
+    name: HttpClientFactory
+    pattern: 'IHttpClientFactory|AddHttpClient<|\.CreateClient\s*\('
+    description: Managed HttpClient instances
+
+  - id: uri_validation
+    name: URI Validation
+    pattern: 'Uri\.IsWellFormedUriString|Uri\.TryCreate'
+    description: URL validation before use
+
+vulnerable:
+  - id: http_client
+    name: HttpClient Requests
+    pattern: 'HttpClient.*GetAsync|HttpClient.*PostAsync|HttpClient.*SendAsync'
+    risk: REVIEW
+    description: HTTP requests - verify URL source
+    remediation: Validate and whitelist allowed URLs/hosts
+
+  - id: web_client
+    name: WebClient
+    pattern: 'new\s+WebClient\s*\(|WebClient.*Download'
+    risk: REVIEW
+    description: WebClient requests - verify URL source
+    remediation: Validate and whitelist allowed URLs/hosts
+
+  - id: url_request
+    name: URL from Request
+    pattern: '(Request\.(Query|Form|Headers)|HttpContext.*Request).*[Uu]rl'
+    risk: HIGH
+    description: URL from user input used in server request
+    remediation: Validate against whitelist of allowed hosts

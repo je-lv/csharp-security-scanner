@@ -1,0 +1,54 @@
+name: Path Traversal
+description: Detects path traversal vulnerabilities and secure file handling patterns
+
+secure:
+  - id: get_full_path
+    name: Path.GetFullPath
+    pattern: 'Path\.GetFullPath\s*\('
+    description: Path canonicalization
+
+  - id: path_combine
+    name: Path.Combine
+    pattern: 'Path\.Combine\s*\('
+    description: Safe path combination
+
+  - id: get_filename
+    name: Path.GetFileName
+    pattern: 'Path\.GetFileName\s*\('
+    description: Filename extraction without path
+
+vulnerable:
+  - id: file_ops
+    name: File Operations
+    pattern: 'File\.(ReadAllText|ReadAllBytes|WriteAllText|WriteAllBytes|Open|Create|Delete|Copy|Move|Exists)\s*\('
+    risk: REVIEW
+    description: File operations - verify input validation
+    remediation: Validate and canonicalize paths before use
+
+  - id: dir_ops
+    name: Directory Operations
+    pattern: 'Directory\.(GetFiles|GetDirectories|Delete|CreateDirectory|Move|Exists)\s*\('
+    risk: REVIEW
+    description: Directory operations - verify input source
+    remediation: Validate and canonicalize paths before use
+
+  - id: mappath_saveas
+    name: MapPath/SaveAs
+    pattern: 'MapPath\s*\(|\.FileName|SaveAs\s*\('
+    risk: REVIEW
+    description: File path operations - verify input source
+    remediation: Use Path.GetFileName and validate paths
+
+  - id: zipfile
+    name: ZipFile Operations
+    pattern: 'ZipFile\.(ExtractToDirectory|Open)|ZipArchive|\.ExtractToFile'
+    risk: MEDIUM
+    description: Zip extraction - potential zip slip vulnerability
+    remediation: Validate extracted paths stay within target directory
+
+  - id: path_request
+    name: Path from Request
+    pattern: '(Request\.(Query|Form|Path)|HttpContext.*Request).*File\.|File\..*Request\.'
+    risk: HIGH
+    description: File operations with request data
+    remediation: Validate, sanitize and canonicalize paths

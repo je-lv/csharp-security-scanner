@@ -1,0 +1,70 @@
+name: Insecure Deserialization
+description: Detects insecure deserialization patterns that may lead to RCE
+
+secure:
+  - id: system_text_json
+    name: System.Text.Json
+    pattern: 'System\.Text\.Json|JsonSerializer\.(Serialize|Deserialize)'
+    description: Safe JSON serialization (no type handling by default)
+
+  - id: typed_deser
+    name: Typed Deserialization
+    pattern: 'JsonConvert\.DeserializeObject<[A-Z]|Deserialize<[A-Z]'
+    description: Strongly-typed deserialization
+
+vulnerable:
+  - id: binary_formatter
+    name: BinaryFormatter
+    pattern: 'BinaryFormatter|new\s+BinaryFormatter\s*\('
+    risk: HIGH
+    description: BinaryFormatter allows arbitrary code execution
+    remediation: Use System.Text.Json or typed serializers
+
+  - id: xml_serializer
+    name: XmlSerializer
+    pattern: 'new\s+XmlSerializer\s*\(|XmlSerializer\s+\w+\s*='
+    risk: REVIEW
+    description: XmlSerializer - verify type source is trusted
+    remediation: Only deserialize to known types
+
+  - id: type_name_handling
+    name: TypeNameHandling
+    pattern: 'TypeNameHandling\.(All|Auto|Objects|Arrays)|TypeNameHandling\s*='
+    risk: HIGH
+    description: Newtonsoft TypeNameHandling enables type instantiation
+    remediation: Use TypeNameHandling.None or use System.Text.Json
+
+  - id: javascript_serializer
+    name: JavaScriptSerializer
+    pattern: 'JavaScriptSerializer'
+    risk: MEDIUM
+    description: Legacy serializer with potential issues
+    remediation: Use System.Text.Json
+
+  - id: soap_formatter
+    name: SoapFormatter
+    pattern: 'SoapFormatter'
+    risk: HIGH
+    description: SoapFormatter allows arbitrary code execution
+    remediation: Use safe serializers like System.Text.Json
+
+  - id: los_formatter
+    name: LosFormatter
+    pattern: 'LosFormatter'
+    risk: HIGH
+    description: LosFormatter allows arbitrary code execution
+    remediation: Use safe serializers
+
+  - id: object_state_formatter
+    name: ObjectStateFormatter
+    pattern: 'ObjectStateFormatter'
+    risk: HIGH
+    description: ObjectStateFormatter allows arbitrary code execution
+    remediation: Use safe serializers
+
+  - id: net_data_contract
+    name: NetDataContractSerializer
+    pattern: 'NetDataContractSerializer'
+    risk: HIGH
+    description: NetDataContractSerializer allows arbitrary code execution
+    remediation: Use safe serializers

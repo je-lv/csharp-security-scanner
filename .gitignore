@@ -1,0 +1,28 @@
+# Output files
+security_review_*.txt
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.env
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.pyc

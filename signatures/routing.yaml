@@ -1,0 +1,21 @@
+name: Routing
+description: Identifies API endpoints and attack surface
+
+vulnerable:
+  - id: mvc_routes
+    name: MVC Routes
+    pattern: 'MapControllerRoute\s*\(|MapHttpRoute\s*\(|MapPageRoute\s*\(|MapRoute\s*\(|CreateRoute\s*\('
+    risk: REVIEW
+    description: MVC route definitions
+
+  - id: minimal_api
+    name: Minimal API
+    pattern: 'MapGet\s*\(|MapPost\s*\(|MapPut\s*\(|MapDelete\s*\(|MapPatch\s*\('
+    risk: REVIEW
+    description: Minimal API endpoints
+
+  - id: http_attrs
+    name: HTTP Attributes
+    pattern: '\[HttpGet|HttpPost|HttpPut|HttpDelete|HttpPatch\]'
+    risk: REVIEW
+    description: HTTP endpoint attributes

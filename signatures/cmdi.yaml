@@ -1,0 +1,58 @@
+name: Command Injection
+description: Detects OS command injection vulnerabilities
+
+secure:
+  - id: use_shell_false
+    name: UseShellExecute=false
+    pattern: 'ProcessStartInfo.*UseShellExecute\s*=\s*false'
+    description: Shell execution disabled
+
+vulnerable:
+  - id: process_start
+    name: Process.Start
+    pattern: 'Process\.Start\s*\(|System\.Diagnostics\.Process\.Start'
+    risk: REVIEW
+    description: Process execution - verify argument source
+    remediation: Validate input and avoid shell execution
+
+  - id: new_process
+    name: new Process
+    pattern: 'new\s+(System\.Diagnostics\.)?Process(StartInfo)?\s*\('
+    risk: REVIEW
+    description: Process instantiation - verify usage
+    remediation: Use UseShellExecute=false
+
+  - id: cmd_shell
+    name: cmd/powershell
+    pattern: 'cmd\.exe|cmd\s*/c|powershell\.exe|/bin/bash|/bin/sh'
+    risk: HIGH
+    description: Shell invocation
+    remediation: Avoid shell execution, use direct process calls
+
+  - id: cmd_concat
+    name: Command Concatenation
+    pattern: '(FileName|Arguments)\s*=.*\+|Process\.Start\s*\([^)]*\+'
+    risk: HIGH
+    description: Dynamic command/argument construction
+    remediation: Use argument arrays, not string concatenation
+
+  - id: shell_method
+    name: Shell Method
+    pattern: '\.Shell\s*\('
+    risk: HIGH
+    description: Shell method invocation
+    remediation: Avoid shell execution
+
+  - id: cliwrap
+    name: CliWrap
+    pattern: 'new\s+Cli\s*\('
+    risk: REVIEW
+    description: CliWrap library usage
+    remediation: Validate command arguments
+
+  - id: invoke
+    name: Invoke
+    pattern: '\.Invoke\s*\([^)]+\)'
+    risk: REVIEW
+    description: Invoke method - verify target
+    remediation: Validate invocation target

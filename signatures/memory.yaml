@@ -1,0 +1,15 @@
+name: Memory and Reflection
+description: Identifies unsafe code and reflection usage
+
+vulnerable:
+  - id: unsafe
+    name: Unsafe Code
+    pattern: 'unsafe\s*\{|fixed\s*\('
+    risk: REVIEW
+    description: Unsafe code blocks
+
+  - id: reflection
+    name: Reflection
+    pattern: 'System\.Reflection|\.GetType\s*\(|\.InvokeMember|Assembly\.Load'
+    risk: REVIEW
+    description: Reflection usage - verify input source

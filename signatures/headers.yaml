@@ -1,0 +1,23 @@
+name: Security Headers
+description: Detects security header configurations
+
+secure:
+  - id: hsts
+    name: HSTS
+    pattern: 'UseHsts|Strict-Transport-Security|AddHsts'
+    description: HTTP Strict Transport Security
+
+  - id: csp
+    name: Content-Security-Policy
+    pattern: 'Content-Security-Policy|UseCsp'
+    description: Content Security Policy header
+
+  - id: x_content_type
+    name: X-Content-Type-Options
+    pattern: 'X-Content-Type-Options|nosniff'
+    description: Prevents MIME type sniffing
+
+  - id: x_frame
+    name: X-Frame-Options
+    pattern: 'X-Frame-Options|DENY|SAMEORIGIN'
+    description: Clickjacking protection
